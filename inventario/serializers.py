@@ -451,6 +451,20 @@ class CrearEquipoSerializer(serializers.ModelSerializer):
 
         extra_kwargs = {'area': {'required': False}}
 
+
+class CrearEquipoAreaSerializer(serializers.ModelSerializer):
+    cama = serializers.IntegerField(required =False, allow_null=True)
+    class Meta:
+        model = Equipo_medico
+        fields = ['numero_nacional_inv', 'nombre_equipo', 'modelo', 'estado', 'numero_serie', 'marca', 'observaciones', 'contrato', 'cama']
+
+    def save(self, **kwargs):
+        area = Area_hospital.objects.get(id = self.context['area'])
+        self.instace = Equipo_medico.objects.create(area = area, **self.validated_data)
+        return self.instance
+
+
+
 class EquipoBajaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipo_medico
@@ -526,6 +540,22 @@ class AgregarServicioEquipo(serializers.ModelSerializer):
         return self.instance
 
 
+class CrearNuevoCheckListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckList
+        fields = ['id','bateria','condicion_general', 'enciende', 'sensor_SPO2',
+                  'sensor_TEMP','PANI','sensor_ECG','sensor_PAI','observaciones',
+                  'desempeño_general', 'equipo']
+
+class UpdateCheckListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckList
+        fields = ['id','bateria','condicion_general', 'enciende', 'sensor_SPO2',
+                  'sensor_TEMP','PANI','sensor_ECG','sensor_PAI','observaciones',
+                  'desempeño_general']
+    
+
+
 class CrearCheckListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckList
@@ -568,8 +598,11 @@ class CrearAtenderReporteSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     
     def save(self, **kwargs):
-        area_equipo = self.context['area']
-        sala_query = Area_hospital.objects.get(id=area_equipo)
+        if self.context['area'] != "no":
+            area_equipo = self.context['area']
+            sala_query = Area_hospital.objects.get(id=area_equipo)
+        else:
+            sala_query = None
         equipo_med = self.context['equipo']
         equipo_query = Equipo_medico.objects.get(id=equipo_med)
         usuario_context = self.context['usuario']
@@ -619,7 +652,11 @@ class VerReportesSerializer(serializers.ModelSerializer):
         return hora_str + time
 
     def get_id(self, reporte: ReporteUsuario):
-        return reporte.equipo.area.id
+        if reporte.equipo.area is not None:
+            return reporte.equipo.area.id
+        else:
+            return 0
+
 
     def get_falla(self, reporte: ReporteUsuario):
         return reporte.get_falla_display()
