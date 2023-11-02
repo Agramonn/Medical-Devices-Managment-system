@@ -24,6 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+AWS_ACCESS_KEY_ID = 'AKIAWKXZZP3Z4VFBZBMT'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'umae-inventario-1'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+AWS_S3_REGION_NAME = 'us-west-2'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERIFY = True
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECURITY WARNING: don't run with debug turned on in production!
